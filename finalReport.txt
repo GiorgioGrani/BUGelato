@@ -1,0 +1,17 @@
+  FINAL REPORT                       
+_____________________________________________________________
+
+  PROFIT:                    0.0
+_____________________________________________________________
++ Revenues                   0.0
+- Raw material costs         0.0
+- Energy costs               0.0
+- Labour costs               0.0
+- Fixed Prod. Center costs   0.0
+- Transport costs            0.0
+- Trucs Activation costs     0.0
+- Trucks purchase costs      0.0
+- Trucks relocation costs    0.0
+- Inventory costs            0.0
+- Fixed Sales Center costs   0.0
+- Investments                0.0

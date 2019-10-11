@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="NewMarinero:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/NewMarinero_jar</output-path>
+    <root id="archive" name="NewMarinero.jar">
+      <element id="module-output" name="NewMarinero" />
+    </root>
+  </artifact>
+</component>
