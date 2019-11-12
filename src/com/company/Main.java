@@ -1,245 +1,295 @@
 package com.company;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.*;
 import java.util.ArrayList;
+import java.util.Scanner;
+import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
-
-        System.out.println("\nWelcome to the project simulator.\n\nPlease wait while parameters are being loaded.\n");
-        // write your code here
-        int nsales = 8;
-        int nproductions = 3;
-        int nprods = 5;
-        int nmkts = 2;
-        int ntrucks = 4;
-        int ntimes = 6;
-        int nrawmaterials = 4;
-        int nvendors = 3;
-        String inputpath = File.separator+"Input"+File.separator;
-
-        //parameters
-        Object[] param = fillParameters(nproductions, nsales, ntimes, nprods, nmkts, ntrucks, nrawmaterials, nvendors);
-        double                  hpermonth =            (double) param[0];
-        double [][]              worktime =       (double [][]) param[1];
-        double []           fixedpaycheck =         (double []) param[2];
-        double []        variablepaycheck =         (double []) param[3];
-        double []                      lb =         (double []) param[4];
-        double []                      ub =         (double []) param[5];
-
-        double []                  volume =         (double []) param[6];
-        double [][]           transp_cost =       (double [][]) param[7];
-        double []              reloc_cost =         (double []) param[8];
-        double []              truck_cost =         (double []) param[9];
-        double [][] activation_truck_cost =       (double [][]) param[10];
-        double []            truck_volume =         (double []) param[11];
-
-        double [][]     conversion_factor =       (double [][]) param[12];
-        double [][]                    ar =       (double [][]) param[13];
-        double [][]                    br =       (double [][]) param[14];
-
-        double [][]     energy_conversion =       (double [][]) param[15];
-        double []                 aenergy =         (double []) param[16];
-        double []        energy_threshold =         (double []) param[17];
-
-        double []              fixedsales =         (double []) param[18];
-        double []        fixedproductions =         (double []) param[19];
-
-        double [][]  inventory_cost_param =       (double [][]) param[20];
-
-        double [][]                     M =       (double [][]) param[21];
-        double [][]                     P =       (double [][]) param[22];
-        double                          a =           (double ) param[23];
-        double [][]                     Q =       (double [][]) param[24];
-        double                          b =           (double ) param[25];
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("\n------------------------------------------------------\n" +
-                             "------------------- BUGelato Corp. -------------------\n" +
-                             "-------- we know what you eat, but you don't----------\n" +
-                             "------------------------------------------------------\n\n");
-        System.out.print("   Team name:");
-        String s = reader.readLine();
-        System.out.println("\n   Hello, "+s+"!" );
-
-        while(true) {
-            System.out.println("\n   To run the simulation please enter 'r', to quit enter 'q'.");
-            System.out.print("     Enter:");
-            s = reader.readLine();
-
-            if (s.equalsIgnoreCase("r")) {
-
-                //input
-                Object[] input = fillInput(nproductions, nsales, ntimes, nprods, nmkts, ntrucks, inputpath);
-                double[][][][] x = (double[][][][]) input[0];
-                double[][] p = (double[][]) input[1];
-                double[][] wvar = (double[][]) input[2];
-                double[] wfixed = (double[]) input[3];
-                double[][] investment = (double[][]) input[4];
-                double[][][][] T = (double[][][][]) input[5];
-                double[][][] Ti = (double[][][]) input[6];
-
-                //quantity to derive
-                double[][][][] demand = new double[nmkts][nsales][ntimes][nprods];
-                double[][] q = new double[nrawmaterials][nproductions];
-                double[][] energy = new double[nproductions][ntimes];
-                double[] Ttot = new double[ntrucks];
-                double[] Treloc = new double[ntrucks];
-                int[] delta = new int[nsales];
-                int[] alpha = new int[nproductions];
-                double[][][] yinv = new double[nprods][ntimes][nsales];
-                double[][][][] v = new double[nmkts][ntimes][nsales][nprods];
-                double[][] A = fillA(x, nprods, ntimes, nsales, nproductions);
+        //public static String basic() {
 
 
-                //todo energy and raw material parameters
+            //JFrame frame = new JFrame("Input dialog BUGelato");
 
-                //computation
-                //
-                //todo make quantities integer!
+            //System.out.println("\nWelcome to the project simulator.\n\nPlease wait while parameters are being loaded.\n");
 
-                q = computeQuantities(x, conversion_factor, nsales, nproductions, nprods, ntimes, nrawmaterials);
+            // write your code here
+            int nsales = 8;
+            int nproductions = 3;
+            int nprods = 5;
+            int nmkts = 2;
+            int ntrucks = 4;
+            int ntimes = 6;
+            int nrawmaterials = 4;
+            int nvendors = 4;
+            String inputpath ="Input" + File.separator;
 
-                energy = computeEnergies(x, energy_conversion, nsales, nproductions, nprods, ntimes);
+            //parameters
+            Object[] param = fillParameters(nproductions, nsales, ntimes, nprods, nmkts, ntrucks, nrawmaterials, nvendors);
+            double hpermonth = (double) param[0];
+            double[][] worktime = (double[][]) param[1];
+            double[] fixedpaycheck = (double[]) param[2];
+            double[] variablepaycheck = (double[]) param[3];
+            double[] lb = (double[]) param[4];
+            double[] ub = (double[]) param[5];
 
-                alpha = computeAlpha(x, nsales, nproductions, nprods, ntimes);
+            double[] volume = (double[]) param[6];
+            double[][] transp_cost = (double[][]) param[7];
+            double[] reloc_cost = (double[]) param[8];
+            double[] truck_cost = (double[]) param[9];
+            double[][] activation_truck_cost = (double[][]) param[10];
+            double[] truck_volume = (double[]) param[11];
 
-                delta = computeDelta(x, nsales, nproductions, nprods, ntimes);
+            double[][] conversion_factor = (double[][]) param[12];
+            double[][] ar = (double[][]) param[13];
+            double[][] br = (double[][]) param[14];
+
+            double[][] energy_conversion = (double[][]) param[15];
+            double[] aenergy = (double[]) param[16];
+            double[] energy_threshold = (double[]) param[17];
+
+            double[] fixedsales = (double[]) param[18];
+            double[] fixedproductions = (double[]) param[19];
+
+            double[][] inventory_cost_param = (double[][]) param[20];
+
+            double[][] M = (double[][]) param[21];
+            double[][] P = (double[][]) param[22];
+            double[] a = (double[]) param[23];
+            double[][] Q = (double[][]) param[24];
+            double[] b = (double[]) param[25];
+
+            double [][] season = (double [][]) param[26];
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("\n------------------------------------------------------\n" +
+                        "------------------- BUGelato Corp. -------------------\n" +
+                        "-------- we know what you eat, but you don't----------\n" +
+                        "------------------------------------------------------\n\n");
+                System.out.print("   Team name:  ");
+                String teamname = reader.readLine();
+                System.out.println("\n   Hello, " + teamname + "!");
+
+                while (true) {
+                    System.out.println("\n   To run the simulation please type 'r', to quit type 'q'.");
+                    System.out.print("     -> ");
+                    String s = reader.readLine();
+
+                    if (s.equalsIgnoreCase("r")) {
+
+                        //input
+                        Object[] input = fillInput(nproductions, nsales, ntimes, nprods, nmkts, ntrucks, inputpath);
+                        double[][][][] x = (double[][][][]) input[0];
+                        double[][] p = (double[][]) input[1];
+                        double[][] wvar = (double[][]) input[2];
+                        double[] wfixed = (double[]) input[3];
+                        double[][] investment = (double[][]) input[4];
+                        double[][][][] T = (double[][][][]) input[5];
+                        double[][][] Ti = (double[][][]) input[6];
+
+                        //quantity to derive
+                        double[][][][] demand = new double[nmkts][nsales][ntimes][nprods];
+                        double[][] q = new double[nrawmaterials][nproductions];
+                        double[][] energy = new double[nproductions][ntimes];
+                        double[] Ttot = new double[ntrucks];
+                        double[] Treloc = new double[ntrucks];
+                        int[] delta = new int[nsales];
+                        int[] alpha = new int[nproductions];
+                        double[][][] yinv = new double[nprods][ntimes][nsales];
+                        double[][][][] v = new double[nmkts][ntimes][nsales][nprods];
+                        double[][] A = fillA(x, nprods, ntimes, nsales, nproductions);
 
 
-                //
-                //demand
+                        //todo energy and raw material parameters
 
-                for (int m = 0; m < nmkts; m++) {
-                    for (int j = 0; j < nsales; j++) {
-                        for (int k = 0; k < ntimes; k++) {
-                            for (int n = 0; n < nprods; n++) {
-                                demand[m][j][k][n] = computeDemand(a, b, M[j][n], P[m][n], Q[m][k], A[k][j], investment[m][k], p[m][n]);
+                        //computation
+                        //
+                        //todo make quantities integer!
+
+                        q = computeQuantities(x, conversion_factor, nsales, nproductions, nprods, ntimes, nrawmaterials);
+
+                        energy = computeEnergies(x, energy_conversion, nsales, nproductions, nprods, ntimes);
+
+                        alpha = computeAlpha(x, nsales, nproductions, nprods, ntimes);
+
+                        delta = computeDelta(x, nsales, nproductions, nprods, ntimes);
+
+
+                        //
+                        //demand
+                        String rep0 = "";
+
+
+
+
+                        for (int m = 0; m < nmkts; m++) {
+                            for (int j = 0; j < nsales; j++) {
+                                for (int k = 0; k < ntimes; k++) {
+                                    for (int n = 0; n < nprods; n++) {
+
+                                        demand[m][j][k][n] = computeDemand(a[m], b[m], M[j][n], P[m][n], Q[m][k], A[k][j], investment[m][k], p[m][n], season[j][k]);
+                                        //System.out.println("demand_mjkn"+(m)+(j)+(k)+(n)+"="+demand[m][j][k][n]);
+
+                                    }
+                                }
                             }
                         }
+
+                        double [][] sum = new double [ntimes][nsales];
+
+                        for (int m = 0; m < nmkts; m++) {
+                            for (int j = 0; j < nsales; j++) {
+                                for (int k = 0; k < ntimes; k++) {
+                                        sum[k][j] += demand[m][j][k][nprods-1];
+
+                                }
+                            }
+                        }
+                        for (int j = 0; j < nsales; j++) {
+                            for (int k = 0; k < ntimes; k++) {
+                                if(A[k][j] > sum[k][j]){
+                                    rep0 = "INFEASIBILITY: there are more popsicles than allowed.";
+                                }
+
+                            }
+                        }
+
+
+                        Object[] wharehouses = computeWharehouses(x, demand, p, nmkts, nsales, nproductions, nprods, ntimes);
+                        yinv = (double[][][]) wharehouses[0];
+                        v = (double[][][][]) wharehouses[1];
+
+                        Object[] trucks = computeTrucks(Ti, ntrucks, ntimes, nproductions);
+                        Ttot = (double[]) trucks[0];
+                        Treloc = (double[]) trucks[1];
+
+                        //objective value
+
+                        double[] revs = computeRevenues(v, p, nmkts, nsales, ntimes, nprods);
+                        double revenues = revs[0];
+                        double revenues0 = revs[1];
+                        double revenues1 = revs[2];
+
+
+                        //todo invert raw material and energy cost functions
+                        double rawmaterialcost = rawMaterialCosts(q, ar, br, nvendors, nrawmaterials, nproductions);
+                        double energycost = energyCosts(energy, aenergy, energy_threshold, ntimes, nproductions);
+                        double workerscost = labourCost(wvar, wfixed, variablepaycheck, fixedpaycheck, nproductions, ntimes);
+                        double fixedsalescost = fixedSales(delta, fixedsales, nsales);
+                        double fixedproductionscost = fixedPruductions(alpha, fixedproductions, nproductions);
+                        double transportationcost = transportationCost(x, transp_cost, volume, nproductions, nsales, ntimes, nprods);
+                        double inventorycost = inventoryCost(yinv, inventory_cost_param, nsales, ntimes, nprods);
+                        double fixedtruckcost = fixedTruckCost(Ttot, truck_cost, ntrucks);
+                        double relocationcost = relocationCost(Treloc, reloc_cost, ntrucks);
+                        double trucksactivetioncost = activeTruckCost(T, activation_truck_cost, nproductions, nsales, ntimes, ntrucks);
+                        double investments = Sum(investment);
+
+                        double profit = revenues - rawmaterialcost - energycost - workerscost
+                                - fixedproductionscost - fixedsalescost - fixedtruckcost
+                                - transportationcost - trucksactivetioncost - inventorycost
+                                - investments - relocationcost;
+                        String report =
+                                "  FINAL REPORT, GROUP NAME:  "+ teamname+
+                                        "\n_____________________________________________________________\n\n" +
+                                        "  PROFIT:                    " + profit + "\n";
+                        report += "_____________________________________________________________\n";
+                        report += "+ Revenues                   " + revenues + "\n";
+                        report += "- Raw material costs         " + rawmaterialcost + "\n";
+                        report += "- Energy costs               " + energycost + "\n";
+                        report += "- Labour costs               " + workerscost + "\n";
+                        report += "- Fixed Prod. Center costs   " + fixedproductionscost + "\n";
+                        report += "- Transport costs            " + transportationcost + "\n";
+                        report += "- Trucs Activation costs     " + trucksactivetioncost + "\n";
+                        report += "- Trucks purchase costs      " + fixedtruckcost + "\n";
+                        report += "- Trucks relocation costs    " + relocationcost + "\n";
+                        report += "- Inventory costs            " + inventorycost + "\n";
+                        report += "- Fixed Sales Center costs   " + fixedsalescost + "\n";
+                        report += "- Investments                " + investments + "\n";
+
+
+                        //feasibility
+                        Object[] check = new Object[2];
+                        boolean checkbool = true;
+
+                        //workers//production centers w.r.t. workers
+
+                        check = checkWorkersAndSaleCenters(alpha, x, wfixed, wvar, worktime, lb, ub, hpermonth,
+                                nproductions, nsales, ntimes, nprods);
+                        checkbool = (boolean) check[0];
+                        if (!checkbool){
+                            report = (String) check[1];}
+
+
+                        //salescenters
+                        check = checkSales(delta);
+                        checkbool = (boolean) check[0];
+                        if (!checkbool){
+                            report = (String) check[1];}
+
+                        //trucks
+                        check = checkTrucks(x, T, truck_volume, volume,
+                                nproductions, nsales, ntimes, nprods, ntrucks);
+                        checkbool = (boolean) check[0];
+                        if (!checkbool){
+                            report = (String) check[1];}
+                        //nonegativity
+                        check = checkNonNegativity(x, T, Ti, wfixed, wvar, p, investment, nproductions, nsales, ntimes, nprods, nmkts, ntrucks);
+                        checkbool = (boolean) check[0];
+                        if (!checkbool){
+                            report = (String) check[1];}
+
+                        if( !rep0.equals("")) {
+                            report = rep0;
+                        }
+
+
+                        //print report into a file called finalReport.txt
+                        File reportfile = new File("finalReport.txt");
+                        if (report == null){
+                            report = "BUG ERROR: please write to g.grani@uniroma1.it";
+                        }
+
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(reportfile, false));
+                        writer.write(report);
+                        writer.flush();
+                        writer.close();
+                        System.out.println("     REPORT: " + report);
+                    } else if (s.equalsIgnoreCase("q")) {
+                        System.out.println("   Thank you for using the simulation tool.\n   See you next time and remember:" +
+                                (Math.random() < 0.3 ? " better some bugs with ice cream than without it!" :
+                                        (Math.random() < 0.3 ?
+                                                "when you make ice cream with bugs you are saving the planet from starvation." :
+                                                (Math.random() < 0.3 ?
+                                                        " love + best ingredients = BUGelato" :
+                                                        "take a free BUGelato at any grocery store by showing your" +
+                                                                " promotional code  I<3EATINGBUGS" + Math.round(1000 * Math.random())))) +
+                                "\n\n__________________________________________________________\n" +
+                                "BUGelato Corp. Intellectual property - All Rights Reserved");
+                        break;
+                    } else {
+                        System.out.println("     It did not work well, please enter something I can understand.");
                     }
                 }
 
-
-                Object[] wharehouses = computeWharehouses(x, demand, p, nmkts, nsales, nproductions, nprods, ntimes);
-                yinv = (double[][][]) wharehouses[0];
-                v = (double[][][][]) wharehouses[1];
-
-                Object[] trucks = computeTrucks(Ti, ntrucks, ntimes, nproductions);
-                Ttot = (double[]) trucks[0];
-                Treloc = (double[]) trucks[1];
-
-                //objective value
-
-                double[] revs = computeRevenues(v, p, nmkts, nsales, ntimes, nprods);
-                double revenues = revs[0];
-                double revenues0 = revs[1];
-                double revenues1 = revs[2];
-
-
-                //todo invert raw material and energy cost functions
-                double rawmaterialcost = rawMaterialCosts(q, ar, br, nvendors, nrawmaterials, nproductions);
-                double energycost = energyCosts(energy, aenergy, energy_threshold, ntimes, nproductions);
-                double workerscost = labourCost(wvar, wfixed, variablepaycheck, fixedpaycheck, nproductions, ntimes);
-                double fixedsalescost = fixedSales(delta, fixedsales, nsales);
-                double fixedproductionscost = fixedPruductions(alpha, fixedproductions, nproductions);
-                double transportationcost = transportationCost(x, transp_cost, volume, nproductions, nsales, ntimes, nprods);
-                double inventorycost = inventoryCost(yinv, inventory_cost_param, nsales, ntimes, nprods);
-                double fixedtruckcost = fixedTruckCost(Ttot, truck_cost, ntrucks);
-                double relocationcost = relocationCost(Treloc, reloc_cost, ntrucks);
-                double trucksactivetioncost = activeTruckCost(T, activation_truck_cost, nproductions, nsales, ntimes, ntrucks);
-                double investments = Sum(investment);
-
-                double profit = revenues - rawmaterialcost - energycost - workerscost
-                        - fixedproductionscost - fixedsalescost - fixedtruckcost
-                        - transportationcost - trucksactivetioncost - inventorycost
-                        - investments - relocationcost;
-                String report =
-                          "  FINAL REPORT                       \n" +
-                          "_____________________________________________________________\n\n" +
-                          "  PROFIT:                    " + profit + "\n";
-                report += "_____________________________________________________________\n";
-                report += "+ Revenues                   " + revenues + "\n";
-                report += "- Raw material costs         " + rawmaterialcost + "\n";
-                report += "- Energy costs               " + energycost + "\n";
-                report += "- Labour costs               " + workerscost + "\n";
-                report += "- Fixed Prod. Center costs   " + fixedproductionscost + "\n";
-                report += "- Transport costs            " + transportationcost + "\n";
-                report += "- Trucs Activation costs     " + trucksactivetioncost + "\n";
-                report += "- Trucks purchase costs      " + fixedtruckcost + "\n";
-                report += "- Trucks relocation costs    " + relocationcost + "\n";
-                report += "- Inventory costs            " + inventorycost + "\n";
-                report += "- Fixed Sales Center costs   " + fixedsalescost + "\n";
-                report += "- Investments                " + investments + "\n";
-
-
-                //feasibility
-                Object[] check = new Object[2];
-                boolean checkbool = true;
-
-                //workers//production centers w.r.t. workers
-
-                check = checkWorkersAndSaleCenters(alpha, x, wfixed, wvar, worktime, lb, ub, hpermonth,
-                        nproductions, nsales, ntimes, nprods);
-                checkbool = (boolean) check[0];
-                if (!checkbool)
-                    report = (String) check[1];
-
-
-                //salescenters
-                check = checkSales(delta);
-                checkbool = (boolean) check[0];
-                if (!checkbool)
-                    report = (String) check[1];
-
-                //trucks
-                check = checkTrucks(x, T, truck_volume, volume,
-                        nproductions, nsales, ntimes, nprods, ntrucks);
-                if (!checkbool)
-                    report = (String) check[1];
-                //nonegativity
-                check = checkNonNegativity(x, T, Ti, wfixed, wvar, p, investment, nproductions, nsales, ntimes, nprods, nmkts, ntrucks);
-                checkbool = (boolean) check[0];
-                if (!checkbool)
-                    report = (String) check[1];
-
-
-                //print report into a file called finalReport.txt
-                File reportfile = new File("finalReport.txt");
-
-                BufferedWriter writer = new BufferedWriter(new FileWriter(reportfile, false));
-                writer.write(report);
-                writer.flush();
-                writer.close();
-                System.out.println("     REPORT: "+report);
-            }else if(s.equalsIgnoreCase("q")){
-                System.out.println("   Thank you for using the simulation tool.\n   See you next time and remember:" +
-                        (Math.random()<0.3? " better some bugs with ice cream than without it!" :
-                                (Math.random() < 0.3?
-                                "when you make ice cream with bugs you are saving the planet from starvation.":
-                                        (Math.random() < 0.3?
-                                 " love + best ingredients = BUGelato":
-                                                "take a free BUGelato at any grocery store by showing your" +
-                                                        " promotional code  I<3EATINGBUGS"+Math.round(1000*Math.random()))))+
-                        "\n\n__________________________________________________________\n" +
-                            "BUGelato Corp. Intellectual property - All Rights Reserved");
-                break;
-            }else{
-                System.out.println("     It did not work well, please enter something I can understand.");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
 
-        }catch (IOException e){
-            e.printStackTrace();
+            /*return "   Thank you for using the simulation tool.\n   See you next time and remember:" +
+                    (Math.random() < 0.3 ? " better some bugs with ice cream than without it!" :
+                            (Math.random() < 0.3 ?
+                                    "when you make ice cream with bugs you are saving the planet from starvation." :
+                                    (Math.random() < 0.3 ?
+                                            " love + best ingredients = BUGelato" :
+                                            "take a free BUGelato at any grocery store by showing your" +
+                                                    " promotional code  I<3EATINGBUGS" + Math.round(1000 * Math.random())))) +
+                    "\n\n__________________________________________________________\n" +
+                    "BUGelato Corp. Intellectual property - All Rights Reserved";
+            */
         }
-    }
 
 
     private static double[][] fillA( double [][][][] x, int nprods, int ntimes, int nsales, int nproductions){
@@ -279,9 +329,9 @@ public class Main {
 
         return alpha;
     }
-    private static double computeDemand( double a, double b, double M, double P,double Q, double  A,double S, double p){
+    private static double computeDemand( double a, double b, double M, double P,double Q, double  A,double S, double p, double seas){
         double ret = 0;
-        ret = M*(Math.pow(Math.max(2.0-p/P, 0.0), a))*(1.0+b*(0.5*S+A)/1e4)*Q/10;
+        ret =Math.floor(1e-9+ seas*M*(Math.pow(Math.max(2.0-p/P, 0.0), a))*(1.0+b*(0.5*S+A)/1e5)*Q/4.75);
         return ret;
     }
     private static int[]  computeDelta(double [][][][] x,int  nsales, int nproductions,int  nprods, int ntimes) {
@@ -325,6 +375,9 @@ public class Main {
             }
         }
 
+
+
+
         return q;
     }
     private static double[][] computeEnergies( double [][][][] x, double [][] energy_conversion, int  nsales, int nproductions,
@@ -356,7 +409,7 @@ public class Main {
 
         for(int j = 0; j<nsales; j++){
             for(int k = 0; k<ntimes; k++){
-                for(int n = 0 ; n<nprods; n++){
+                for(int n = 0 ; n<nprods-1; n++){
                     for(int i = 0; i<nproductions; i++){
                         arriving[n][k][j] += x[i][j][k][n];
                     }
@@ -367,12 +420,12 @@ public class Main {
 //k=0
         for(int j = 0; j<nsales; j++){
 
-            for(int n = 0 ; n<nprods; n++){
+            for(int n = 0 ; n<nprods-1; n++){
                 double availability = arriving[n][0][j];
                 double demand0 = Math.floor(demand[0][j][0][n]);
                 double demand1 = Math.floor(demand[1][j][0][n]);
                 if(p[0][n] > p[1][n]){
-                    double sold = Math.min( demand0, availability );
+                    double sold =Math.min( demand0, availability );
                     v[0][0][j][n] = sold;
                     double soldsecondround = Math.min( demand1, availability - sold);
                     v[1][0][j][n] = soldsecondround;
@@ -384,7 +437,6 @@ public class Main {
                     v[0][0][j][n] = soldsecondround;
                     yinv[n][0][j] = availability - sold- soldsecondround;
                 }
-
             }
         }
 
@@ -393,8 +445,8 @@ public class Main {
         for (int k = 1; k<ntimes; k++) {
             for (int j = 0; j < nsales; j++) {
 
-                for (int n = 0; n < nprods; n++) {
-                    double availability = arriving[n][k][j];
+                for (int n = 0; n < nprods-1; n++) {
+                    double availability = arriving[n][k][j]+yinv[n][k-1][j];
                     double demand0 = Math.floor(demand[0][j][k][n]);
                     double demand1 = Math.floor(demand[1][j][k][n]);
                     double sold = 0;
@@ -411,11 +463,34 @@ public class Main {
                         soldsecondround = Math.min(demand0, availability - sold);
                         v[0][k][j][n] = soldsecondround;
                     }
-                    yinv[n][k][j] = availability - sold - soldsecondround + yinv[n][k-1][j];
+                    yinv[n][k][j] = availability - sold - soldsecondround;
                 }
             }
         }
 
+
+        /*
+        for(int j = 0; j<nsales;j++){
+            for(int k = 0; k<ntimes; k++){
+                for(int n = 0; n<nprods; n++){
+                    if( yinv[n][k][j] > 0){
+                        System.out.println("y"+j+k+n+" : "+yinv[n][k][j]);
+                    }
+                }
+            }
+        }
+
+        for(int m = 0; m<nmkts; m++){
+            for(int j = 0; j <nsales; j++){
+                for (int k = 0; k<ntimes; k++){
+                    for (int n = 0; n<nprods; n++){
+                        if( v[m][k][j][n] > 0)
+                            System.out.println("vmktjkn"+m+j+k+n+" : "+v[m][k][j][n]);
+                    }
+                }
+            }
+        }
+        */
         Object[] ret = new Object[2];
         ret[0] = yinv;
         ret[1] = v;
@@ -435,8 +510,12 @@ public class Main {
                 if( Tsums[k][t] >= Ttot[t]){
                     Ttot[t] = Tsums[k][t];
                 }
-                if(k > 0 && (Tsums[k-1][t]-Tsums[k][t])>0){
-                    Treloc[t] += (Tsums[k-1][t]-Tsums[k][t]);
+
+
+                if(k > 0){
+                    for(int i = 0; i<nproductions; i++) {
+                        Treloc[t] += Math.abs(Ti[i][k][t]-Ti[i][k-1][t])/2.0;
+                    }
                 }
             }
         }
@@ -482,12 +561,17 @@ public class Main {
         for(int r = 0; r<nrawmaterials; r++){
             for(int i = 0; i<nproductions; i++){
                 auction[r][i] = Double.MAX_VALUE;
+                int bestv = -1;
                 for(int v= 0; v<nvendors; v++){
                     double offer = ar[r][v]*q[r][i]+br[r][v];
                     if( auction[r][i] > offer){
                         auction[r][i] = offer;
+                        bestv=v;
                     }
                 }
+
+                //System.out.println("auctionri"+r+i+"="+auction[r][i]+"     "+ar[r][bestv]+" "+br[r][bestv]+"   "
+                  //      +(ar[r][bestv]*q[r][i]+br[r][bestv])+"    -bestv "+bestv);
                 cost += auction[r][i];
             }
         }
@@ -501,7 +585,7 @@ public class Main {
             for(int i = 0; i<nproductions;i++){
 
                     double value;
-                    if(energy[k][i] > energy_threshold[i]){
+                    if(energy[i][k] > energy_threshold[i]){
                         value = energy[i][k] - energy_threshold[i];
                         value = value*aenergy[1] + aenergy[0]*energy_threshold[i];
                     }else{
@@ -518,7 +602,7 @@ public class Main {
                                       int nproductions, int ntimes){
         double cost = 0;
         for(int i = 0; i<nproductions; i++){
-            cost += wfixed[i]*fixedpaychecks[i];
+            cost += wfixed[i]*fixedpaychecks[i]*ntimes;
             for(int k = 0; k<ntimes; k++){
                 cost += wvar[k][i]*varpaychecks[i];
             }
@@ -566,6 +650,7 @@ public class Main {
 
         for(int t = 0; t<ntrucks; t++){
             cost += Ttot[t]*truck_cost[t];
+            //System.out.println("ttott"+t+"="+Ttot[t]);
         }
         return cost;
     }
@@ -801,10 +886,12 @@ public class Main {
             }
         }
 
+
+
         return ret;
     }
 
-    private static Object[] fillInput(int nproductions, int nsales, int ntimes, int nprods, int nmkts, int ntrucks, String inputpath){
+    private static Object[] fillInput(int nproductions, int nsales, int ntimes, int nprods, int nmkts, int ntrucks, String inputpath) throws IOException{
         double [][][][] x = new double [nproductions][nsales][ntimes][nprods];
         double [][] p = new double [nmkts][nprods];
         double [][] wvar = new double [ntimes][nproductions];
@@ -812,6 +899,95 @@ public class Main {
         double [][] investment = new double [nmkts][ntimes];
         double [][][][] T = new double[nproductions][nsales][ntimes][ntrucks];
         double [][][] Ti = new double[nproductions][ntimes][ntrucks];
+
+        File filex = new File(inputpath+"quantities.txt");
+        Scanner scx = new Scanner(filex);
+
+
+        for(int k = 0; k<ntimes; k++) {
+            for (int i = 0; i < nproductions; i++) {
+                for (int n = 0; n < nprods; n++) {
+                    for (int j = 0; j < nsales; j++) {
+                        x[i][j][k][n] = Math.floor(1e-8+Math.abs(scx.nextDouble()));
+                    }
+                }
+            }
+        }
+        scx.close();
+
+        File filet = new File(inputpath+"trucks.txt");
+        Scanner sct = new Scanner(filet);
+
+
+        for(int k = 0; k<ntimes; k++) {
+            for (int i = 0; i < nproductions; i++) {
+                for (int t = 0; t < ntrucks; t++) {
+                    for (int j = 0; j < nsales; j++) {
+                        T[i][j][k][t] = Math.floor(1e-8+Math.abs(sct.nextDouble()));
+                    }
+                }
+            }
+        }
+        sct.close();
+
+        File fileti = new File(inputpath+"truck_spots.txt");
+        Scanner scti = new Scanner(fileti);
+
+
+            for (int i = 0; i < nproductions; i++) {
+                for (int t = 0; t < ntrucks; t++) {
+                    for (int k = 0; k<ntimes; k++) {
+                        Ti[i][k][t] = Math.floor(1e-8+Math.abs(scti.nextDouble()));
+                    }
+                }
+            }
+
+        scti.close();
+
+
+        File filep = new File(inputpath+"prices.txt");
+        Scanner scp = new Scanner(filep);
+
+
+        for(int m = 0; m<nmkts; m++)
+            for(int n = 0; n<nprods; n++)
+                p[m][n] = Math.abs(scp.nextDouble());
+
+        if (p[0][nprods-1] > 0 || p[1][nprods-1]>0) {
+            p[0][nprods-1] = 0;
+            p[1][nprods-1] = 0;
+            System.out.println(" WARNING: the price of popsicles has been put to 0. Check the input file please.");
+
+        }
+        scp.close();
+
+        File filew = new File(inputpath+"workers.txt");
+        Scanner scw = new Scanner(filew);
+
+
+        for(int i = 0; i<nproductions; i++){
+            for(int k =0; k<(ntimes+1); k++){
+                if( k==0){
+                    wfixed[i] = Math.floor(1e-8+Math.abs(scw.nextDouble()));
+                }else{
+                    wvar[k-1][i] = Math.floor(1e-8+Math.abs(scw.nextDouble()));
+                }
+            }
+        }
+        scw.close();
+
+        File fileinv = new File(inputpath+"investments.txt");
+        Scanner scinv = new Scanner(fileinv);
+
+        for(int m = 0; m<nmkts; m++){
+            for(int k = 0; k<ntimes;k++){
+                investment[m][k] = Math.abs(scinv.nextDouble());
+            }
+        }
+
+
+
+        scinv.close();
 
 
 
@@ -828,39 +1004,76 @@ public class Main {
     private static Object[] fillParameters(int nproductions, int nsales, int ntimes, int nprods, int nmkts,
                                            int ntrucks, int nrawmaterials, int nvendors){
         double hpermonth = 20*8;
-        double [][] worktime = new double [nprods][nproductions];
+        double [][] worktime = new double [][]{{.05,.1,.1},
+                                              { .1,.15,.15},
+                                               {.1,.15,.1},
+                                              {.1,.1,.1},
+                                               {.02,.02,.02}};
         double [] fixedpaycheck = new double[]{1500, 1200, 1250};
-        double [] variablepaycheck = new double[]{1900, 1800, 1850};
+        double [] variablepaycheck = new double[]{1900, 1600, 1650};
         double [] lb ={15, 20, 15};// new double [nproductions];
-        double [] ub ={30, 30, 35};
+        double [] ub ={3000, 2500, 2720};
 
         double [] volume = new double [] {.6, .3, .8, .4, .01};
-        double [][] transp_cost = new double [nproductions][nsales];
-        double [] reloc_cost = new double [ntrucks];
-        double [] truck_cost = new double [ntrucks];
-        double [][] activation_truck_cost = new double [nproductions][ntrucks];
-        double [] truck_volume = new double[ntrucks];
+        double [][] transp_cost = new double [][]{{9,4,3,13,15,17,3,11},{5,9,8,4,10,5,9,2},{6,5,12,14,.5,7,10,7}};
+        double [] reloc_cost = new double []{100,500,2500,6000};
+        double [] truck_cost = new double []{25000, 350000, 600000, 1e7};
+        double [][] activation_truck_cost = new double [][]{{110, 150, 170, 270},{100, 170, 170, 290},{70, 120, 150, 310}};
+        double [] truck_volume = new double[]{280, 5200, 10000, 200000};
 
-        double [][] conversion_factor = new double [nrawmaterials][nprods];
-        double [][] ar = new double[nrawmaterials][nvendors];
-        double [][] br = new double[nrawmaterials][nvendors];
+        double [][] conversion_factor = new double [][]{{.1,.5,.2,.1,.2},{1,1,1.3,.8,0},{1,2,1.4,.5,0},{.1,.3,.1,.1,0}};
+        double [][] ar = new double[][]{{0.6, 0.5, 0.3, 0.225},
+                {9.6, 8, 5, 3.75},
+                {2.04, 1.7, 1, 0.75},
+                {1.08, 0.9, 0.6, 0.45}};
+        double [][] br = new double[][] {{0,	1479.865,	5919.46,	4439.595},
+                {0,	150097.6,	562866,	469055},
+                {0,	60187.48,	247830.8,	177022},
+                {0,	2836.008,	9453.36,	9453.36}};
 
-        double [][] energy_conversion = new double[nprods][nproductions];
+        double [][] energy_conversion = new double[][]{{.5,.7,.7},{.7,.9,1},{.6,.8,.9},{.5,.7,.7},{.1,.1,.1}};
         double [] aenergy = new double[] {.1, .2};
         double [] energy_threshold = new double[] {56286.7, 6940.54, 8100.66};
 
         double [] fixedsales = new double[]{20000, 18000, 10000, 9000, 12000, 15000, 22000, 13000};
-        double [] fixedproductions = new double[] {800000, 600000, 650000};
+        double [] fixedproductions = new double[] {80000, 60000, 65000};
 
-        double[][] inventory_cost_param = new double[nsales][nprods];
+        double[][] inventory_cost_param = new double[][]{{1.6,0.6,1.6,0.8,.02},
+            {2.4,1.2,3.2,1.6,.04},
+            {1.8,.9,2.4,1.2,.03},
+            {.6,.3,.8,.4,.01},
+            {1.8,.9,2.4,1.2,.03},
+            {.9,.45,1.2,.6,.015},
+            {1.5,.75,2,1,.025},
+            {2.1,1.05,2.8,1.4,.035}};
 
 
         //demand params
-        double [][] M = new double[nsales][nprods];
-        double [][] P = new double[nsales][nprods];
-        double a = 0;
-        double [][] Q = new double[nmkts][ntimes];
-        double b = 0;
+        double [][] M = new double[][]{
+                {1128.2, 1482.93, 1122.46,1498.08,1111.23},
+            {1257.75, 1011.23, 1489.42,1318.78, 1088.28},
+            {1215.82, 1147.99, 1479.57, 1286.38, 1187.62},
+            {1187.62,1023.14, 1027, 1354.04, 1454.82},
+            {1454.82, 1248.89, 1107.56, 1000.04, 1475.92},
+            {1475.92, 1008.76, 1318.78, 1088.28, 1147.99},
+            {1147.99, 1479.57, 1286.38, 1187.62, 1023.14},
+            {1023.14, 1027, 1354.04, 1454.82, 1248.89}};
+        double [][] P = new double[][]{{35,25,45,30,1},{45,30,55,40,1}};
+        double [] a =new double[] {1.6, 1.5};
+        double [][] Q = new double[][]{{8,10,8,6,3,1},{1,3,6,10,10,5}};
+        double [] b = new double[]{.05,.1};
+
+
+        double [][] season = new double [][]
+                {{0.12499999999999822, 0.49999999999999956, 0.8750000000000027, 1.0, 0.8750000000000027, 0.49999999999999956},
+                        {1.7199999999999984, 1.319999999999998, 1.0800000000000023, 1.0, 1.0800000000000023, 1.319999999999998},
+                        {0.5950000000000002, 0.8199999999999976, 0.9549999999999994, 1.0, 0.9549999999999994, 0.8199999999999976},
+                        {1.1800000000000024, 1.0800000000000023, 1.0199999999999978, 1.0, 1.0199999999999978, 1.0800000000000023},
+                        {0.9549999999999994, 0.9800000000000022, 0.9950000000000006, 1.0, 0.9950000000000006, 0.9800000000000022},
+                        {1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                        {0.9549999999999994, 0.9800000000000022, 0.9950000000000006, 1.0, 0.9950000000000006, 0.9800000000000022},
+                        {1.1800000000000024, 1.0800000000000023, 1.0199999999999978, 1.0, 1.0199999999999978, 1.0800000000000023}};
+
 
 
 
@@ -892,6 +1105,8 @@ public class Main {
         ret[23] = a;
         ret[24] = Q;
         ret[25] = b;
+        ret[26] = season;
+
         return ret;
     }
 }
