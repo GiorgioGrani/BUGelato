@@ -130,7 +130,7 @@ public class Main {
                                 for (int k = 0; k < ntimes; k++) {
                                     for (int n = 0; n < nprods; n++) {
 
-                                        demand[m][j][k][n] = computeDemand(a[m], b[m], M[j][n], P[m][n], Q[m][k], A[k][j], investment[m][k], p[m][n], season[j][k]);
+                                        demand[m][j][k][n] = computeDemand(a[m], b[m], M[j][n], P[m][n], Q[m][k], A[k][j], investment[m][j], p[m][n], season[j][k]);
                                         //System.out.println("demand_mjkn"+(m)+(j)+(k)+(n)+"="+demand[m][j][k][n]);
 
                                     }
@@ -896,7 +896,7 @@ public class Main {
         double [][] p = new double [nmkts][nprods];
         double [][] wvar = new double [ntimes][nproductions];
         double [] wfixed = new double [nproductions];
-        double [][] investment = new double [nmkts][ntimes];
+        double [][] investment = new double [nmkts][nsales];
         double [][][][] T = new double[nproductions][nsales][ntimes][ntrucks];
         double [][][] Ti = new double[nproductions][ntimes][ntrucks];
 
@@ -980,8 +980,8 @@ public class Main {
         Scanner scinv = new Scanner(fileinv);
 
         for(int m = 0; m<nmkts; m++){
-            for(int k = 0; k<ntimes;k++){
-                investment[m][k] = Math.abs(scinv.nextDouble());
+            for(int j = 0; j<nsales;j++){
+                investment[m][j] = Math.abs(scinv.nextDouble());
             }
         }
 

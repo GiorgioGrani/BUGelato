@@ -1,17 +1,17 @@
-  FINAL REPORT, GROUP NAME:  rr
+  FINAL REPORT, GROUP NAME:  r
 _____________________________________________________________
 
-  PROFIT:                    0.0
+  PROFIT:                    -1.11024019423825E11
 _____________________________________________________________
-+ Revenues                   0.0
-- Raw material costs         0.0
-- Energy costs               0.0
-- Labour costs               0.0
-- Fixed Prod. Center costs   0.0
-- Transport costs            0.0
-- Trucs Activation costs     0.0
-- Trucks purchase costs      0.0
++ Revenues                   5.10815456E9
+- Raw material costs         5.31751369845E8
+- Energy costs               1.3777357180000003E7
+- Labour costs               6.54E7
+- Fixed Prod. Center costs   205000.0
+- Transport costs            2.786647268E8
+- Trucs Activation costs     123900.0
+- Trucks purchase costs      5.8455E8
 - Trucks relocation costs    0.0
 - Inventory costs            0.0
-- Fixed Sales Center costs   0.0
-- Investments                0.0
+- Fixed Sales Center costs   47000.0
+- Investments                1.1465765463E11
